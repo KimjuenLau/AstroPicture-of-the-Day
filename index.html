@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroPicture of the Day</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-blue: #1a73e8;
+            --text-color: #202124;
+            --secondary-text: #5f6368;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border: #dadce0;
+            --shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+        }
+
+        body { 
+            font-family: 'Google Sans', 'Roboto', sans-serif; 
+            background-color: var(--bg-color); 
+            margin: 0; 
+            padding: 16px; 
+            display: flex; 
+            justify-content: center; 
+            color: var(--text-color); 
+            position: relative;
+        }
+
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        .btn-lang {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 18px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--secondary-text);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        .btn-lang:hover { background: #f1f3f4; }
+
+        .container { 
+            width: 100%; 
+            max-width: 800px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px; 
+        }
+
+        .header { text-align: center; margin: 12px 0; }
+        h1 { font-size: 1.8rem; font-weight: 400; margin: 0; }
+        .subtitle { color: var(--secondary-text); margin-top: 6px; font-size: 0.9rem; }
+
+        .gemini-card { 
+            background: var(--card-bg); 
+            border-radius: 20px; 
+            padding: 20px; 
+            box-shadow: var(--shadow); 
+        }
+
+        .controls { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 12px; 
+            margin-bottom: 16px;
+        }
+
+        .field { display: flex; flex-direction: column; gap: 6px; }
+        label { font-size: 0.8rem; font-weight: 500; color: var(--secondary-text); padding-left: 4px; }
+        
+        select { 
+            appearance: none; 
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 10px 12px; 
+            font-size: 1rem; 
+            outline: none; 
+            cursor: pointer; 
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235f6368%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E'); 
+            background-repeat: no-repeat; 
+            background-position: right 8px center; 
+            background-size: 16px; 
+        }
+
+        .btn-main { 
+            width: 100%;
+            height: 44px; 
+            background: var(--primary-blue); 
+            color: white; 
+            border: none; 
+            border-radius: 22px; 
+            font-size: 1rem; 
+            font-weight: 500; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            transition: background 0.2s;
+        }
+        .btn-main:hover { background: #174ea6; }
+
+        .switch-container { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            margin-top: 16px; 
+            padding: 14px 16px; 
+            background-color: #f8f9fa; 
+            border-radius: 14px; 
+            border: 1px solid #edf0f2;
+        }
+
+        .switch-label-text { 
+            font-size: 0.85rem; 
+            color: var(--secondary-text); 
+            line-height: 1.4;
+            flex: 1;
+            padding-right: 12px;
+        }
+
+        .switch { 
+            position: relative; 
+            display: inline-block; 
+            width: 46px; 
+            height: 24px; 
+            flex-shrink: 0; 
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider { 
+            position: absolute; 
+            cursor: pointer; 
+            top: 0; left: 0; right: 0; bottom: 0; 
+            background-color: #bdc1c6; 
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-radius: 34px; 
+        }
+
+        .slider:before { 
+            position: absolute; 
+            content: ""; 
+            height: 18px; 
+            width: 18px; 
+            left: 3px; 
+            bottom: 3px; 
+            background-color: white; 
+            transition: .3s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-radius: 50%; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider { background-color: var(--primary-blue); }
+        input:checked + .slider:before { transform: translateX(25px); }
+
+        .viewer-container { 
+            position: relative; 
+            width: 100%; 
+            padding-top: 56.25%; 
+            background: #f1f3f4; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        #main-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; display: none; background: #000; }
+        
+        .details { margin-top: 16px; }
+        .title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+        #img-title { font-size: 1.2rem; margin: 0; font-weight: 500; }
+        .btn-link { 
+            text-decoration: none; 
+            background: #f1f3f4; 
+            color: var(--primary-blue); 
+            padding: 6px 12px; 
+            border-radius: 8px; 
+            display: none; 
+            font-size: 0.85rem; 
+            font-weight: 500;
+        }
+
+        .spinner { width: 28px; height: 28px; border: 3px solid #e0e0e0; border-top-color: var(--primary-blue); border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 480px) {
+            .controls { grid-template-columns: 1fr; }
+            .title-row { flex-direction: column; align-items: flex-start; }
+            .btn-link { margin-top: 8px; }
+            .lang-switch { top: 10px; right: 10px; }
+        }
+        .tips {background-color: rgba(0,0,0,0.1); border-radius: 20px; padding: 15px; color:#5f6368; font-size: 0.85rem;}
+        .footer {
+            text-align: center;
+            padding: 24px 0 8px 0;
+            margin-top: auto;
+        }
+
+        .footer p {
+            font-size: 0.75rem;
+            color: #9aa0a6;
+            margin: 4px 0;
+            letter-spacing: 0.3px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="lang-switch">
+    <button class="btn-lang" onclick="toggleLanguage()">
+        <span class="material-icons" style="font-size: 18px;">language</span>
+        <span id="langText">English</span>
+    </button>
+</div>
+
+<div class="container">
+    <div class="header">
+        <p class="subtitle">KimjuenLau's Toolkit</p>
+        <h1 id="ui-title">探索宇宙</h1>
+        <p class="subtitle" id="ui-subtitle">NASA Astronomy Picture of the Day<br/>NASA 每日天文图</p>
+    </div>
+
+    <div class="gemini-card">
+        <div class="controls">
+            <div class="field"><label id="label-y">年 (找不到想要的月就先来改我!)</label><select id="ySelect"></select></div>
+            <div class="field"><label id="label-m">月 (找不到想要的日就先来改我!)</label><select id="mSelect"></select></div>
+            <div class="field"><label id="label-d">日</label><select id="dSelect"></select></div>
+        </div>
+        
+        <button class="btn-main" onclick="fetchAPOD()">
+            <span class="material-icons">search</span><span id="ui-search">开始查询</span>
+        </button>
+
+        <div class="switch-container">
+            <span class="switch-label-text" id="ui-proxy-text">Workers 代理模式 (默认开启)</span>
+            <label class="switch">
+                <input type="checkbox" id="proxyToggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+        <br/>
+        <div id="ui-tips" class="tips gemini-card">
+            · Workers 代理适用于无法快速连接美国 NASA 服务器的用户 (中国大陆用户适用), 图像下载速度较快。 
+            <br/>
+            · 如您关闭 Workers 代理模式, 您将从 NASA 服务器直接获取信息。
+            <br/>
+            · 如 Workers 多次失效, 可尝试关闭, 若仍不可用，可能是 NASA 服务受阻，请稍后再试。
+        </div>
+    </div>
+
+    <div class="gemini-card">
+        <div class="viewer-container">
+            <div id="loader" class="spinner"></div>
+            <div id="placeholder" style="color:var(--secondary-text); text-align:center;">
+                <span class="material-icons" style="font-size:40px; opacity:0.2;">auto_awesome</span>
+                <p id="ui-ready" style="font-size: 0.9rem;">准备启航</p>
+            </div>
+            <img id="main-img" src="">
+        </div>
+
+        <div class="details">
+            <div class="title-row">
+                <h2 id="img-title"></h2>
+                <a id="dl-link" class="btn-link" target="_blank">查看原图</a>
+            </div>
+            <p id="img-desc" style="font-size: 0.95rem; line-height: 1.6; color: var(--secondary-text);"></p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>GitHub @KimjuenLau Published</p>
+        <p>MIT-License</p>
+        <p id="ui-data-source">数据来源: NASA APIs NASA APOD Explorer</p>
+    </div>
+</div>
+
+
+<script>
+    let currentLang = 'zh';
+    const i18n = {
+        zh: {
+            switchBtn: "English",
+            title: "探索宇宙",
+            subtitle: "NASA Astronomy Picture of the Day<br/>NASA 每日天文图",
+            labelY: "年 (找不到想要的月就先来改我!)",
+            labelM: "月 (找不到想要的日就先来改我!)",
+            labelD: "日",
+            search: "开始查询",
+            proxy: "Workers 代理模式 (默认开启)",
+            tips: "· Workers 代理适用于无法快速连接美国 NASA 服务器的用户 (中国大陆用户适用), 图像下载速度较快。<br/>· 如您关闭 Workers 代理模式, 您将从 NASA 服务器直接获取信息。<br/>· 如 Workers 多次失效, 可尝试关闭, 若仍不可用，可能是 NASA 服务受阻，请稍后再试。",
+            ready: "准备启航",
+            viewOrig: "查看原图",
+            source: "数据来源: NASA APIs NASA APOD Explorer",
+            videoMsg: "此日期为视频内容，请<a href='#' target='_blank' style='color:var(--primary-blue)'>点击此处观看</a>(中国大陆用户可能无法观看)",
+            errorMsg: "获取失败, 也许是 NASA 的服务受阻..."
+        },
+        en: {
+            switchBtn: "中文",
+            title: "AstroPicture of the Day",
+            subtitle: "NASA Astronomy Picture of the Day",
+            labelY: "Year (Change me to update Months)",
+            labelM: "Month (Change me to update Days)",
+            labelD: "Day",
+            search: "Search",
+            proxy: "Workers Proxy Mode (Enabled by default)",
+            tips: "· Workers proxy is recommended for users with slow connection to NASA servers. <br/>· If proxy is disabled, data is fetched directly from NASA. <br/>· If proxy fails repeatedly, try disabling it or check back later.",
+            ready: "Ready to launch",
+            viewOrig: "View Original",
+            source: "Data Source: NASA APIs NASA APOD Explorer",
+            videoMsg: "This is a video content. Please <a href='#' target='_blank' style='color:var(--primary-blue)'>click here to watch</a>.",
+            errorMsg: "Fetch failed. NASA services might be unavailable..."
+        }
+    };
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'zh' ? 'en' : 'zh';
+        const t = i18n[currentLang];
+        
+        document.getElementById('langText').innerText = t.switchBtn;
+        document.getElementById('ui-title').innerText = t.title;
+        document.getElementById('ui-subtitle').innerHTML = t.subtitle;
+        document.getElementById('label-y').innerText = t.labelY;
+        document.getElementById('label-m').innerText = t.labelM;
+        document.getElementById('label-d').innerText = t.labelD;
+        document.getElementById('ui-search').innerText = t.search;
+        document.getElementById('ui-proxy-text').innerText = t.proxy;
+        document.getElementById('ui-tips').innerHTML = t.tips;
+        document.getElementById('ui-ready').innerText = t.ready;
+        document.getElementById('dl-link').innerText = t.viewOrig;
+        document.getElementById('ui-data-source').innerText = t.source;
+        
+        updateMonths();
+    }
+
+    const WORKER_BASE_URL = "your base url here"; 
+
+    const elY = document.getElementById('ySelect');
+    const elM = document.getElementById('mSelect');
+    const elD = document.getElementById('dSelect');
+    const imgEl = document.getElementById('main-img');
+    const dlLink = document.getElementById('dl-link');
+    const loader = document.getElementById('loader');
+    const placeholder = document.getElementById('placeholder');
+
+    function getETNow() {
+        const now = new Date();
+        const etStr = now.toLocaleString("en-US", {timeZone: "America/New_York"});
+        return new Date(etStr);
+    }
+    const TARGET = getETNow();
+    const START_Y = 1995;
+
+    function init() {
+        for (let y = TARGET.getFullYear(); y >= START_Y; y--) elY.add(new Option(y, y));
+        elY.onchange = updateMonths;
+        elM.onchange = updateDays;
+        elY.value = TARGET.getFullYear();
+        updateMonths();
+        elM.value = TARGET.getMonth() + 1;
+        updateDays();
+        elD.value = TARGET.getDate();
+    }
+
+    function updateMonths() {
+        const selY = parseInt(elY.value);
+        const curM = elM.value;
+        elM.innerHTML = '';
+        let endM = (selY === TARGET.getFullYear()) ? (TARGET.getMonth() + 1) : 12;
+        for (let m = 1; m <= endM; m++) elM.add(new Option(m, m));
+        if (curM && [...elM.options].some(o => o.value == curM)) elM.value = curM;
+        updateDays();
+    }
+
+    function updateDays() {
+        const selY = parseInt(elY.value);
+        const selM = parseInt(elM.value);
+        const curD = elD.value;
+        elD.innerHTML = '';
+        let startD = (selY === 1995 && selM === 1) ? 16 : 1;
+        let lastDay = new Date(selY, selM, 0).getDate();
+        let endD = (selY === TARGET.getFullYear() && selM === (TARGET.getMonth() + 1)) ? TARGET.getDate() : lastDay;
+        for (let d = startD; d <= endD; d++) elD.add(new Option(d, d));
+        if (curD && [...elD.options].some(o => o.value == curD)) elD.value = curD;
+    }
+
+    async function fetchAPOD() {
+        const dateStr = `${elY.value}-${elM.value.padStart(2,'0')}-${elD.value.padStart(2,'0')}`;
+        const useProxy = document.getElementById('proxyToggle').checked;
+        const t = i18n[currentLang];
+        
+        imgEl.style.display = 'none';
+        dlLink.style.display = 'none';
+        placeholder.style.display = 'none';
+        loader.style.display = 'block';
+
+        try {
+            const requestUrl = `${WORKER_BASE_URL}?date=${dateStr}&use_proxy=${useProxy}`;
+            const res = await fetch(requestUrl);
+            const data = await res.json();
+
+            loader.style.display = 'none';
+            if (data.media_type === 'image') {
+                imgEl.src = (useProxy && data.proxy_url) ? data.proxy_url : data.url;
+                imgEl.style.display = 'block';
+                dlLink.style.display = 'inline-flex';
+                dlLink.href = data.hdurl || data.url;
+            } else if (data.media_type === 'video'){
+                placeholder.style.display = 'block';
+                const videoId = data.url.split('/').pop().split('?')[0];
+                const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                placeholder.innerHTML = `<p style="font-size:0.9rem;">${t.videoMsg.replace('#', videoUrl)}</p>`;
+            } else {
+                placeholder.style.display = 'block';
+                placeholder.innerHTML = `<p style="font-size:0.9rem;">${t.errorMsg}</p>`;
+            }
+            document.getElementById('img-title').innerText = data.title || '';
+            document.getElementById('img-desc').innerText = data.explanation || '';
+        } catch (e) {
+            loader.style.display = 'none';
+            placeholder.style.display = 'block';
+            placeholder.innerText = t.errorMsg;
+        }
+    }
+
+    init();
+</script>
+
+</body>
+</html>
